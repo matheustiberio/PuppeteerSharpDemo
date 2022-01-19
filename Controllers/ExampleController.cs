@@ -58,6 +58,7 @@ namespace PuppeteerSharpDemo.Controllers
             var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
+                Args = new[] { "--no-sandbox" }
             });
 
             return browser;
