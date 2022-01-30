@@ -2,24 +2,23 @@
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using Razor.Templating.Core;
+using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharpDemo.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     public class AppController : ControllerBase
     {
-        const string HtmlPath = @"Templates\ExampleTemplate.cshtml";
-
         [HttpGet("to-pdf")]
-        public async Task<IActionResult> Get(bool openInNewTab = true)
+        public async Task<IActionResult> Get(bool download = true)
         {
-            string html = await RenderHtml(HtmlPath);
+            string html = await RenderHtml("Templates\\ExampleTemplate.cshtml");
 
             var pdfBytes = await ConvertHtmlToPdf(html);
 
-            return File(pdfBytes, "application/pdf", openInNewTab ? string.Empty : "example.pdf");
+            return File(pdfBytes, "application/pdf", download ? "example.pdf" : string.Empty);
         }
 
         private static async Task<string> RenderHtml(string htmlPath)
@@ -36,7 +35,6 @@ namespace PuppeteerSharpDemo.Controllers
             PdfOptions pdfOptions = new()
             {
                 Format = PaperFormat.A4,
-                DisplayHeaderFooter = true,
                 MarginOptions = new MarginOptions
                 {
                     Top = "20px",
@@ -58,7 +56,6 @@ namespace PuppeteerSharpDemo.Controllers
             var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
-                Args = new[] { "--no-sandbox" }
             });
 
             return browser;
@@ -73,4 +70,3 @@ namespace PuppeteerSharpDemo.Controllers
         }
     }
 }
-
